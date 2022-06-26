@@ -24,5 +24,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix("auth")->group(function () {
 
     Route::post("register", [AuthController::Class, "register"])->name("users.register");
+    Route::get("users", function (){
+        return response()->json(["hello"]);
+    })->name("users.register");
 
 });
