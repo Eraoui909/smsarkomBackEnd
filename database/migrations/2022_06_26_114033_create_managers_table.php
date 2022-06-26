@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Managers extends Migration
+class CreateManagersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -22,7 +22,7 @@ class Managers extends Migration
             $table->string('address');
             $table->string('phone');
             $table->integer('role')->default(2); // admin: 0; editor: 1; moderator:2;
-            $table->string('picture');
+            $table->string('picture')->default("avatar.png");
             $table->rememberToken();
             $table->timestamps();
         });

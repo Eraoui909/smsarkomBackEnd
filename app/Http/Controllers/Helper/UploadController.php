@@ -12,11 +12,28 @@ class UploadController extends Controller
 
     public static function managerPic(Request $request)
     {
+        if(!$request->file('images')){
+            return "avatar.png";
+        }
 
         $file=$request->file('images')[0];
         $extension = strtolower($file->getClientOriginalExtension());
         $filename = "manager-".uniqid(time()).".".$extension;
         $file->move('uploads/managers/avatars/',$filename);
+
+        return $filename;
+    }
+
+    public static function userPic(Request $request)
+    {
+        if(!$request->file('images')){
+            return "avatar.png";
+        }
+
+        $file=$request->file('images')[0];
+        $extension = strtolower($file->getClientOriginalExtension());
+        $filename = "user-".uniqid(time()).".".$extension;
+        $file->move('uploads/users/avatars/',$filename);
 
         return $filename;
     }

@@ -25,9 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $products = Product::with(["pictures","category"])->where("visibility",1)->limit(7)->get();
-
-        return view('frontOffice.store')->with(["products" => $products]);
+        return view('welcome');
     }
 
 

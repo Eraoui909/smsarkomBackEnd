@@ -37,7 +37,7 @@ Route::namespace("Admin")->prefix("admin")->name("admin.")->group(function () {
     Route::middleware("auth:admin")->group(function () {
 
         Route::get("dashboard", [AdminController::Class, "index"])->name("dashboard");
-        Route::get("management/categories", [CategoryController::Class, "index"])->name("index.category");
+        Route::get("/", [AdminController::Class, "index"])->name("dashboard");
 
         Route::get("profile", [ManagerController::Class, "profile"])->name("managers.profile");
         Route::post("update/general", [ManagerController::Class, "updateGeneral"])->name("update.general");
@@ -51,6 +51,17 @@ Route::namespace("Admin")->prefix("admin")->name("admin.")->group(function () {
 
         Route::get("newsletter", [NewsletterController::Class, "display"])->name("newsletter");
         Route::post("newsletter/changeState", [NewsletterController::Class, "changeState"])->name("newsletter.changeState");
+
+
+
+        Route::middleware(["auth:admin", "isSuper"])->prefix("users")->group(function () {
+
+            Route::get("/", [ManagerController::Class, "allUsers"])->name("users.display");
+            Route::post("delete", [ManagerController::Class, "deleteUser"])->name("users.delete");
+            Route::get("add", [ManagerController::Class, "addUser"])->name("users.add");
+            Route::post("insert", [ManagerController::Class, "insertUser"])->name("users.insert");
+
+        });
 
 
         #################################   Super Admin Tasks Begin    ###########################################################
@@ -68,28 +79,17 @@ Route::namespace("Admin")->prefix("admin")->name("admin.")->group(function () {
         #################################   Editor Tasks Begin    ################################################################
         Route::middleware(["auth:admin", "isEditor"])->group(function () {
 
-            Route::get("management/create-category", [CategoryController::Class, "create"])->name("create.category");
-            Route::post("management/store-category", [CategoryController::Class, "store"])->name("store.category");
-            Route::get("management/edit-category/{id}", [CategoryController::Class, "edit"])->name("edit.category");
-            Route::post("management/update-category/{id}", [CategoryController::Class, "update"])->name("update.category");
-            Route::get("management/destroy-category/{id}", [CategoryController::Class, "destroy"])->name("destroy.category");
+
 
         });
         #################################   Editor Tasks Begin    ################################################################
 
         #################################   Moderator Tasks Begin  ###############################################################
 
-            Route::prefix("products")->group(function (){
+        Route::prefix("products")->group(function (){
 
-                Route::get("/all-products",[ProductController::class,"index"])->name("index.product");
-                Route::get("/new-product",[ProductController::class,"create"])->name("create.product");
-                Route::post("/store-product",[ProductController::class,"store"])->name("store.product");
-                Route::get("/edit-product/{id}",[ProductController::class,"edit"])->name("edit.product");
-                Route::post("/update-product/{id}",[ProductController::class,"update"])->name("update.product");
-                Route::get("/destroy-product/{id}",[ProductController::class,"destroy"])->name("destroy.product");
-                Route::get("/visibility-product/{id}",[ProductController::class,"makeItVisible"])->name("visibility.product");
-                Route::get("/search-product",[ProductController::class,"searchProduct"])->name("search.product");
-            });
+
+        });
 
         #################################   Moderator Tasks End    ###############################################################
 

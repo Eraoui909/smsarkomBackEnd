@@ -22,8 +22,7 @@ class AdminController extends Controller
     {
         $manager = Manager::select(["full_name"])->where("id",auth()->guard("admin")->id())->get();
         $nbrClients = User::count();
-        $nbrProducts = Product::count();
-        return view('backOffice.dashboard')->with(["manager" => $manager,"nbrClients" => $nbrClients,"nbrProducts" => $nbrProducts]);
+        return view('backOffice.dashboard')->with(["manager" => $manager,"nbrClients" => $nbrClients,"nbrProducts" => 1]);
     }
 
     public function check(Request $request) {
