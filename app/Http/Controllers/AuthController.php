@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Helper\UploadController;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Models\Manager;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,52 +16,60 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
 
-    public function register(Request $request): string
+    public function index(Request  $request){
+
+        if(!auth()->user()->tokenCan('admin')){
+            abort(403,'UnAuthorized');
+        }
+        return response()->json("hello");
+    }
+
+    public function register(RegisterRequest $request): UserResource
     {
-        $request->validate([
-            "fullname" => "required|max:100|unique:users,fullname",
-            "email"     => "required|email|unique:users,email",
-            "password"  => "required|min:8",
-            "address"   => "max:255",
-            "username"     => "required|unique:users,username",
-            "phone"     => "max:20",
-        ],
+
+        $newUser = User::create(
             [
-                "fullname.required" => "le champ nom et Prenom est obligatoite",
-                "fullname.max"      => "le champ nom et Prenom ne peut pas depasser 100 caracteres",
-                "fullname.unique"   => "cet utilisateur existe deja dans la base de donnees",
+                "fullname"  => $request->input("fullname"),
+                "email"      => $request->input("email"),
+                "password"   => Hash::make($request->input("password")),
+                "address"    => $request->input("address"),
+                "username"    => $request->input("username"),
+                "phone"      => $request->input("Phone"),
+                "gender"      => $request->input("gender"),
+                "type"      => $request->input("type"),
+                "country"      => $request->input("country"),
+                "city"      => $request->input("city"),
+                "picture"    => UploadController::userPic($request)
+            ]
+        );
+        return new UserResource($newUser);
+    }
 
-                "username.required" => "le champ username est obligatoite",
-                "username.max"      => "le champ username ne peut pas depasser 100 caracteres",
-                "username.unique"   => "cet utilisateur existe deja dans la base de donnees",
+    public function login(LoginRequest $request)
+    {
+        $user= User::where('email', $request->email)->first();
+        // print_r($data);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response([
+                'error_login' => ['These credentials do not match our records.']
+            ], 422);
+        }
 
-                "email.required"     => "le champ Email est obligatoite",
-                "email.email"        => "le champ Email doit respecter la structure des emails",
-                "email.unique"       => "cet email existe deja",
+        $token = $user->createToken('smsarkom-token',["admin"])->plainTextToken;
 
-                "password.required"  => "le mot de passe est obligatoite",
-                "password.min"       => "le mot de passe ne peut pas etre compose de moins de 8 caracteres",
+        $user = new UserResource($user);
 
-                "address.max"        => "l'Address ne peut pas depasser 255 caracteres",
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
 
-                "Phone.max"          => "le champ Phone ne peut pas depasser 20 caracteres",
-            ]);
+        return response($response, 201);
+    }
 
-        $user = new User();
 
-        $user->fullname  = $request->input("fullname");
-        $user->email      = $request->input("email");
-        $user->password   = Hash::make($request->input("password"));
-        $user->address    = $request->input("address");
-        $user->username    = $request->input("username");
-        $user->phone      = $request->input("Phone");
-        $user->gender      = $request->input("gender");
-        $user->type      = $request->input("type");
-        $user->country      = $request->input("country");
-        $user->city      = $request->input("city");
-        $user->picture    = UploadController::userPic($request);
+    public function logout(Request $request){
 
-        $user->save();
-        return "succes";
+        auth()->user()->tokens()->delete();
     }
 }

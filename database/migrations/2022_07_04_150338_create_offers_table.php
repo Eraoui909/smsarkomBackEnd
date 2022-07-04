@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateOffersTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('offers', function (Blueprint $table) {
+            $table->id();
+            $table->string("title");
+            $table->string("description");
+            $table->string("country");
+            $table->string("city");
+            $table->string("location");
+            $table->string("type");
+            $table->string("category");
+            $table->string("details");
+            $table->decimal("price");
+            $table->integer("builtIn");
+            $table->integer("garage");
+            $table->decimal("area");
+            $table->decimal("agentFees");
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('offers');
+    }
+}

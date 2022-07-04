@@ -15,16 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        view()->composer('frontOffice.layout.includes.header',function ($view){
-            $categories = Category::select('id','name')->get();
-            $cartItems = session()->get("cartItems") ?? [];
-            $totalPrice = 0;
-            $nbProduct = count($cartItems);
-            foreach ($cartItems as $item){
-                $totalPrice += ($item["price"] - ($item["price"]*$item["discount"])/100 ) * $item["quantity"];
-            }
-            $view->with(['categories' => $categories, "totalPrice" => $totalPrice, "nbProduct" => $nbProduct,"cartItems" => $cartItems ]);
-        });
+
     }
 
     /**
